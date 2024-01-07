@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -11,83 +12,173 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ConverterToNegative
 {
-  public partial class Form1 : Form
-  {
-    public Form1()
+    public partial class Form1 : Form
     {
-      InitializeComponent();
-    }
+        public Form1()
+        {
+            InitializeComponent();
+            radioButton1.Checked = true;
+            InitializeTimer();
+        }
 
-    private void radioButton2_CheckedChanged(object sender, EventArgs e)
-    {
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
 
-    }
+        }
 
-    private void button2_Click(object sender, EventArgs e)
-    {
+        private void button2_Click(object sender, EventArgs e)
+        {
             pictureBox2.Image = null;
-    }
+        }
 
-    private void button1_Click(object sender, EventArgs e)
-    {
-            //TODO: Dodać obsługę zapisu pliku z użyciem saveFileDialog1
-    }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (pictureBox2.Image != null)
+            {
+                // Otwórz okno dialogowe SaveFileDialog
+                saveFileDialog1.Filter = "Image Files(*.bmp)|*.bmp";
+                saveFileDialog1.Title = "Zapisz obraz";
+                saveFileDialog1.ShowDialog();
 
-    private void trackBar1_Scroll(object sender, EventArgs e)
-    {
-      // Obsługa zdarzenia zmiany wartości suwaka
+                // Jeśli użytkownik wybrał plik i kliknął OK
+                if (saveFileDialog1.FileName != "")
+                {
+                    // Zapisz przekonwertowany obraz do wybranego pliku
+                    pictureBox2.Image.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Bmp);
+
+                    MessageBox.Show("Obraz został pomyślnie zapisany.", "Zapisano", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Proszę najpierw przekonwertować obraz.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            // Obsługa zdarzenia zmiany wartości suwaka
             int currentValue = trackBar1.Value;
             label2.Text = currentValue.ToString();
-    }
+        }
 
-    private void button3_Click(object sender, EventArgs e)
-    {
+        private void button3_Click(object sender, EventArgs e)
+        {
             openFileDialog1.Filter = "Image Files(*.bmp)|*.bmp";
             openFileDialog1.ShowDialog();
-    }
+        }
 
-    private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-    {
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
             pictureBox1.Image = new Bitmap(openFileDialog1.FileName);
-    }
+        }
 
-    private void trackBar2_Scroll(object sender, EventArgs e)
-    {
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
             int currentValue = trackBar2.Value;
             label4.Text = currentValue.ToString();
-    }
+        }
 
-    private void button4_Click(object sender, EventArgs e)
-    {
-            //TODO: Dodać kod uruchamiający proces konwersji bitmapy
-    }
-
-        /*
-
-        private Bitmap ConvertToSepia(Bitmap originalImage)
+        private Bitmap selectedConvertFunction(Bitmap originalImage, int degree)
         {
-          Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
+            return radioButton1.Checked ? ConvertToNegative(originalImage, degree) : ConvertToNegativeAsm(originalImage);
+        }
 
-          for (int y = 0; y < originalImage.Height; y++)
-          {
-            for (int x = 0; x < originalImage.Width; x++)
+        private Queue<long> lastFiveTimes = new Queue<long>();
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (pictureBox1.Image != null)
             {
-              Color originalColor = originalImage.GetPixel(x, y);
+                // Pomiar czasu
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-              int sepiaR = (int)(originalColor.R * 0.393 + originalColor.G * 0.769 + originalColor.B * 0.189);
-              int sepiaG = (int)(originalColor.R * 0.349 + originalColor.G * 0.686 + originalColor.B * 0.168);
-              int sepiaB = (int)(originalColor.R * 0.272 + originalColor.G * 0.534 + originalColor.B * 0.131);
+                int degree = trackBar1.Value; // Pobierz wartość stopnia z suwaka
+                Bitmap originalImage = new Bitmap(pictureBox1.Image);
 
-              // Zapewnij, aby wartości kolorów nie przekroczyły 255
-              sepiaR = Math.Min(sepiaR, 255);
-              sepiaG = Math.Min(sepiaG, 255);
-              sepiaB = Math.Min(sepiaB, 255);
+                // Wywołanie odpowiedniej funkcji konwersji w zależności od wyboru użytkownika
+                Bitmap convertedImage = selectedConvertFunction(originalImage, degree);
 
-              newImage.SetPixel(x, y, Color.FromArgb(sepiaR, sepiaG, sepiaB));
+                pictureBox2.Image = convertedImage;
+
+                stopwatch.Stop();
+                TimeSpan elapsedTime = stopwatch.Elapsed;
+
+                // Store the elapsed time in the queue
+                lastFiveTimes.Enqueue(elapsedTime.Ticks);
+
+                // Keep only the last 5 time values
+                while (lastFiveTimes.Count > 5)
+                {
+                    lastFiveTimes.Dequeue();
+                }
+
+                // Calculate the mean of the last 5 time values
+                long meanTicks = lastFiveTimes.Count > 0 ? (long)lastFiveTimes.Average() : 0;
+
+                // Display the mean time
+                TimeSpan meanTime = TimeSpan.FromTicks(meanTicks);
+                label10.Text = $"{meanTime.Seconds:D2} sec : {meanTime.Milliseconds:D3} ms";
+
+                // Wyświetlenie czasu operacji
+                label9.Text = $"{elapsedTime.Seconds:D2} sec : {elapsedTime.Milliseconds:D3} ms";
+
+                
             }
-          }
+            else
+            {
+                MessageBox.Show("Proszę wybrać obraz przed konwersją.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-          return newImage;
-        }*/
+        private Bitmap ConvertToNegative(Bitmap originalImage, int degree)
+        {
+            Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            for (int y = 0; y < originalImage.Height; y++)
+            {
+                for (int x = 0; x < originalImage.Width; x++)
+                {
+                    Color originalColor = originalImage.GetPixel(x, y);
+
+                    int newR = (originalColor.R * (100 - degree) + (255 - originalColor.R) * degree) / 100;
+                    int newG = (originalColor.G * (100 - degree) + (255 - originalColor.G) * degree) / 100;
+                    int newB = (originalColor.B * (100 - degree) + (255 - originalColor.B) * degree) / 100;
+
+                    newImage.SetPixel(x, y, Color.FromArgb(newR, newG, newB));
+                }
+            }
+
+            return newImage;
+        }
+
+        private Bitmap ConvertToNegativeAsm(Bitmap originalImage)
+        {
+            return null;
+        }
+
+        private System.Windows.Forms.Timer systemTimer;
+
+        private void InitializeTimer()
+        {
+            systemTimer = new System.Windows.Forms.Timer();
+            systemTimer.Tick += new EventHandler(systemTimer_Tick);
+            systemTimer.Interval = 1000; // Ustaw interwał w milisekundach (tu: co 1000 ms, czyli co 1 sekundę)
+            systemTimer.Start();
+        }
+
+        private void systemTimer_Tick(object sender, EventArgs e)
+        {
+            DisplaySystemTime();
+        }
+        private void DisplaySystemTime()
+        {
+            DateTime currentTime = DateTime.Now;
+            label13.Text = $"Aktualny czas: {currentTime.ToString()}";
+        }
+
+
+
     }
 }
