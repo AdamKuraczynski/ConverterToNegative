@@ -6,7 +6,7 @@
 
 ✅ Użycie dowolnej technologii GUI
 
-❌ 2 tożsame biblioteki:
+✅ 2 tożsame biblioteki:
 
 ✅ Język wysokiego poziomu
 
@@ -14,9 +14,9 @@
 
 ✅ Pomiar czasu (z uwzględnieniem jednostek):
 
-❌ 3 zestawy danych
+✅ 3 zestawy danych
 
-❌ 2 biblioteki
+✅ 2 biblioteki
 
 ✅ Uśredniony wynik z 5 wywołań
 
@@ -36,7 +36,7 @@
 
 ✅ Interfejsu użytkownika z możliwością wybrania biblioteki wykonującej program
 
-❌ 2 bibliotek: wysokiego poziomu i asemblerowej
+✅ 2 bibliotek: wysokiego poziomu i asemblerowej
 
 ✅ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
 
