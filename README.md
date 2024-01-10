@@ -38,7 +38,7 @@
 
 ❌ 2 bibliotek: wysokiego poziomu i asemblerowej
 
-❌ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
+✅ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
 
 ✅ Zestawu kontrolek (suwaki, przyciski, itp..., w tym do obsługi wielowątkowości)
 
@@ -51,6 +51,3 @@
 ❌ Kod (Waga: 2)
 
 ❌ Raport (Waga: 2)
-
-
-![image](https://github.com/bartlomi/ConverterToNegative/assets/145380612/22ae86eb-259b-4041-bb90-599c3cfd832c)
