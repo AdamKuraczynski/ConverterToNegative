@@ -127,7 +127,7 @@ namespace ConverterToNegative
                 // Wyświetlenie czasu operacji
                 label9.Text = $"{elapsedTime.Seconds:D2} sec : {elapsedTime.Milliseconds:D3} ms";
 
-                
+                label15.Text = $"{stopwatch.ElapsedTicks}";
             }
             else
             {
@@ -194,10 +194,12 @@ namespace ConverterToNegative
         private void DisplaySystemTime()
         {
             DateTime currentTime = DateTime.Now;
-            label13.Text = $"Aktualny czas: {currentTime.ToString()}";
+            label13.Text = $"{currentTime.ToString()}";
         }
 
+        private void label14_Click(object sender, EventArgs e)
+        {
 
-
+        }
     }
 }
