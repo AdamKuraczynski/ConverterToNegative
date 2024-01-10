@@ -38,7 +38,7 @@
 
 ❌ 2 bibliotek: wysokiego poziomu i asemblerowej
 
-❌ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
+✅ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
 
 ✅ Zestawu kontrolek (suwaki, przyciski, itp..., w tym do obsługi wielowątkowości)
 
