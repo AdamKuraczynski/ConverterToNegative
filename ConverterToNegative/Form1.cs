@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,7 +15,9 @@ namespace ConverterToNegative
 {
     public partial class Form1 : Form
     {
-        public Form1()
+    [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
+    static extern int MyProc1(int a, int b);
+    public Form1()
         {
             InitializeComponent();
             radioButton1.Checked = true;
@@ -81,7 +84,7 @@ namespace ConverterToNegative
 
         private Bitmap selectedConvertFunction(Bitmap originalImage, int degree)
         {
-            return radioButton1.Checked ? ConvertToNegative(originalImage, degree) : ConvertToNegativeAsm(originalImage);
+            return radioButton1.Checked ? ConvertToNegative(originalImage, degree) : ConvertToNegativeAsm(originalImage, degree);
         }
 
         private Queue<long> lastFiveTimes = new Queue<long>();
@@ -153,9 +156,25 @@ namespace ConverterToNegative
             return newImage;
         }
 
-        private Bitmap ConvertToNegativeAsm(Bitmap originalImage)
+        private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree)
         {
-            return null;
+            Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+            for (int y = 0; y < originalImage.Height; y++)
+            {
+              for (int x = 0; x < originalImage.Width; x++)
+              {
+                Color originalColor = originalImage.GetPixel(x, y);
+
+                int newAsmR = MyProc1(originalColor.R, degree);
+                int newAsmG = MyProc1(originalColor.G, degree);
+                int newAsmB = MyProc1(originalColor.B, degree);
+
+                newImage.SetPixel(x, y, Color.FromArgb(newAsmR, newAsmG, newAsmB));
+              }
+            }
+
+            return newImage;
         }
 
         private System.Windows.Forms.Timer systemTimer;
