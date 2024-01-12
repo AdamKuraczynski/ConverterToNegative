@@ -307,7 +307,7 @@ namespace ConverterToNegative
             this.label14.Size = new System.Drawing.Size(122, 20);
             this.label14.TabIndex = 22;
             this.label14.Text = "Takty procesora";
-            this.label14.Click += new System.EventHandler(this.label14_Click);
+            //this.label14.Click += new System.EventHandler(this.label14_Click);
             // 
             // label15
             // 
