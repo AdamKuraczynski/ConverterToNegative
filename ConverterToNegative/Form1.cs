@@ -29,90 +29,63 @@ namespace ConverterToNegative
     {
     [DllImport("ConverterToNegativeAsm.dll")]
     static extern int MyProc1(int a, int b);
-    public Form1()
-        {
+    public Form1() {
             InitializeComponent();
             radioButton1.Checked = true;
             InitializeTimer();
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
+    }
+        private void button2_Click(object sender, EventArgs e) {
             pictureBox2.Image = null;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (pictureBox2.Image != null)
-            {
-                // Otwarcie okna dialogowego SaveFileDialog
+        private void button1_Click(object sender, EventArgs e) {
+            if (pictureBox2.Image != null) {
                 saveFileDialog1.Filter = "Image Files(*.bmp)|*.bmp";
                 saveFileDialog1.Title = "Zapisz obraz";
                 saveFileDialog1.ShowDialog();
 
-                // Jeśli użytkownik wybrał plik i kliknął OK
-                if (saveFileDialog1.FileName != "")
-                {
-                    // Zapisz przekonwertowany obraz do wybranego pliku
+                if (saveFileDialog1.FileName != "") {
                     pictureBox2.Image.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Bmp);
-
                     MessageBox.Show("Obraz został pomyślnie zapisany.", "Zapisano", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-            }
-            else
-            {
+            } else {
                 MessageBox.Show("Proszę najpierw przekonwertować obraz.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
-        {
-            // Obsługa zdarzenia zmiany wartości suwaka
+        private void trackBar1_Scroll(object sender, EventArgs e) {
             int currentValue = trackBar1.Value;
             label2.Text = currentValue.ToString();
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
+        private void button3_Click(object sender, EventArgs e) {
             openFileDialog1.Filter = "Image Files(*.bmp)|*.bmp";
             openFileDialog1.ShowDialog();
         }
 
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e) {
             pictureBox1.Image = new Bitmap(openFileDialog1.FileName);
         }
 
-        private void trackBar2_Scroll(object sender, EventArgs e)
-        {
+        private void trackBar2_Scroll(object sender, EventArgs e) {
             int currentValue = trackBar2.Value;
             label4.Text = currentValue.ToString();
         }
 
-        private Bitmap selectedConvertFunction(Bitmap originalImage, int degree)
-        {
+        private Bitmap selectedConvertFunction(Bitmap originalImage, int degree) {
             return radioButton1.Checked ? ConvertToNegative(originalImage, degree) : ConvertToNegativeAsm(originalImage, degree);
         }
 
         private Queue<long> lastFiveTimes = new Queue<long>();
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (pictureBox1.Image != null)
-            {
-                // Pomiar czasu
+        private void button4_Click(object sender, EventArgs e) {
+            if (pictureBox1.Image != null) {
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                int degree = trackBar1.Value; // Pobierz wartość stopnia z suwaka
+                int degree = trackBar1.Value;
                 Bitmap originalImage = new Bitmap(pictureBox1.Image);
 
-                // Wywołanie odpowiedniej funkcji konwersji w zależności od wyboru użytkownika
                 Bitmap convertedImage = selectedConvertFunction(originalImage, degree);
 
                 pictureBox2.Image = convertedImage;
@@ -120,41 +93,33 @@ namespace ConverterToNegative
                 stopwatch.Stop();
                 TimeSpan elapsedTime = stopwatch.Elapsed;
 
-                // Store the elapsed time in the queue
                 lastFiveTimes.Enqueue(elapsedTime.Ticks);
 
-                // Keep only the last 5 time values
-                while (lastFiveTimes.Count > 5)
-                {
-                    lastFiveTimes.Dequeue();
-                }
-
-                // Calculate the mean of the last 5 time values
+                while (lastFiveTimes.Count > 5) lastFiveTimes.Dequeue();
+ 
                 long meanTicks = lastFiveTimes.Count > 0 ? (long)lastFiveTimes.Average() : 0;
 
-                // Display the mean time
                 TimeSpan meanTime = TimeSpan.FromTicks(meanTicks);
                 label10.Text = $"{meanTime.Seconds:D2} sec : {meanTime.Milliseconds:D3} ms";
 
-                // Wyświetlenie czasu operacji
                 label9.Text = $"{elapsedTime.Seconds:D2} sec : {elapsedTime.Milliseconds:D3} ms";
 
                 label15.Text = $"{stopwatch.ElapsedTicks}";
-            }
-            else
-            {
-                MessageBox.Show("Proszę wybrać obraz przed konwersją.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            } else MessageBox.Show("Proszę wybrać obraz przed konwersją.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
         }
 
+        /// <summary>
+        /// Konwertuje podany oryginalny obraz na negatyw z określonym stopniem.
+        /// </summary>
+        /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
+        /// <param name="degree">Stopień negatywu dla konwersji.</param>
+        /// <returns>Obraz w negatywie.</returns>
         private Bitmap ConvertToNegative(Bitmap originalImage, int degree)
         {
             Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
-
-            for (int y = 0; y < originalImage.Height; y++)
-            {
-                for (int x = 0; x < originalImage.Width; x++)
-                {
+            for (int y = 0; y < originalImage.Height; y++) {
+                for (int x = 0; x < originalImage.Width; x++) {
                     Color originalColor = originalImage.GetPixel(x, y);
 
                     int newR = (originalColor.R * (100 - degree) + (255 - originalColor.R) * degree) / 100;
@@ -164,18 +129,20 @@ namespace ConverterToNegative
                     newImage.SetPixel(x, y, Color.FromArgb(newR, newG, newB));
                 }
             }
-
             return newImage;
         }
 
+        /// <summary>
+        /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej asemblerowej biblioteki z określonym stopniem.
+        /// </summary>
+        /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
+        /// <param name="degree">Stopień negatywu dla konwersji.</param>
+        /// <returns>Obraz w negatywie.</returns>
         private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree)
         {
             Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
-
-            for (int y = 0; y < originalImage.Height; y++)
-            {
-              for (int x = 0; x < originalImage.Width; x++)
-              {
+            for (int y = 0; y < originalImage.Height; y++) {
+              for (int x = 0; x < originalImage.Width; x++) {
                 Color originalColor = originalImage.GetPixel(x, y);
 
                 int newAsmR = MyProc1(originalColor.R, degree);
@@ -184,34 +151,31 @@ namespace ConverterToNegative
 
                 newImage.SetPixel(x, y, Color.FromArgb(newAsmR, newAsmG, newAsmB));
               }
-            }
-
+            } 
             return newImage;
         }
 
         private System.Windows.Forms.Timer systemTimer;
 
-        private void InitializeTimer()
-        {
+        /// <summary>
+        /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej biblioteki z określonym stopniem.
+        /// </summary>
+        /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
+        /// <param name="degree">Stopień negatywu dla konwersji.</param>
+        /// <returns>Obraz w negatywie.</returns>
+        private void InitializeTimer() {
             systemTimer = new System.Windows.Forms.Timer();
             systemTimer.Tick += new EventHandler(systemTimer_Tick);
-            systemTimer.Interval = 1000; // Ustaw interwał w milisekundach (tu: co 1000 ms, czyli co 1 sekundę)
+            systemTimer.Interval = 1000;
             systemTimer.Start();
         }
 
-        private void systemTimer_Tick(object sender, EventArgs e)
-        {
+        private void systemTimer_Tick(object sender, EventArgs e) {
             DisplaySystemTime();
         }
-        private void DisplaySystemTime()
-        {
+        private void DisplaySystemTime() {
             DateTime currentTime = DateTime.Now;
             label13.Text = $"{currentTime.ToString()}";
-        }
-
-        private void label14_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
