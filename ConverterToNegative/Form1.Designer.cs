@@ -16,34 +16,25 @@
 
 namespace ConverterToNegative
 {
-  partial class Form1
-  {
     /// <summary>
-    /// Required designer variable.
+    /// Główna klasa formularza aplikacji obsługującej konwersję obrazu na negatyw.
     /// </summary>
-    private System.ComponentModel.IContainer components = null;
+    partial class Form1 {
+        
+        private System.ComponentModel.IContainer components = null;
+        
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) { 
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-    protected override void Dispose(bool disposing)
-    {
-      if (disposing && (components != null))
-      {
-        components.Dispose();
-      }
-      base.Dispose(disposing);
-    }
-
-    #region Windows Form Designer generated code
-
-    /// <summary>
-    /// Required method for Designer support - do not modify
-    /// the contents of this method with the code editor.
-    /// </summary>
-    private void InitializeComponent()
-    {
+        #region Windows Form Designer generated code
+        /// <summary>
+        /// Metoda wymagana do obsługi projektanta formularzy
+        /// </summary>
+        private void InitializeComponent() {
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -358,14 +349,13 @@ namespace ConverterToNegative
             this.Controls.Add(this.trackBar1);
             this.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.Name = "Form1";
-            this.Text = "Bitmap Negation on a Scale";
+            this.Text = "Wyznaczanie negatywu bitmapy z nasyceniem 0-100%";
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
     }
 
     #endregion
@@ -392,11 +382,10 @@ namespace ConverterToNegative
     private System.Windows.Forms.Button button4;
     private System.Windows.Forms.OpenFileDialog openFileDialog1;
     private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label15;
+    private System.Windows.Forms.Label label11;
+    private System.Windows.Forms.Label label12;
+    private System.Windows.Forms.Label label13;
+    private System.Windows.Forms.Label label14;
+    private System.Windows.Forms.Label label15;
     }
 }
-
