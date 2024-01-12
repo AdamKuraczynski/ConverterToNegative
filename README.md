@@ -44,7 +44,7 @@
 
 ### Projekt wrzuca się na PZE. Elementy:
 
-✅ Karta projektu (Waga: 1) - OCENA -> 5
+✅ Karta projektu (Waga: 1)
 
 ❌ Prezentacja (Waga: 1)
 
