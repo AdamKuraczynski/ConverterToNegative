@@ -9,7 +9,7 @@
 ;    Datê: 12.01.2024r
 ;    Semestr/Rok akademicki: se. V, r.a. 2023/2024
 ;    Nazwisko autora: Krzysztof Adam, Adam Kuraczyñski, Bart³omiej Kêdroñ
-;    Aktualn¹ wersjê programu: 1.0
+;    Aktualn¹ wersjê programu: 1.1
 ;    Historia zmian: https://github.com/bartlomi/ConverterToNegative
 
 .code 
