@@ -25,19 +25,34 @@ using System.Windows.Forms;
 
 namespace ConverterToNegative
 {
+    /// <summary>
+    /// Główna klasa formularza aplikacji konwertera na negatyw.
+    /// </summary>
     public partial class Form1 : Form
     {
-    [DllImport("ConverterToNegativeAsm.dll")]
-    static extern int MyProc1(int a, int b);
-    public Form1() {
+        [DllImport("ConverterToNegativeAsm.dll")]
+        static extern int MyProc1(int a, int b);
+        private System.Windows.Forms.Timer systemTimer;
+
+        /// <summary>
+        /// Konstruktor głównej formy.
+        /// </summary>
+        public Form1() {
             InitializeComponent();
             radioButton1.Checked = true;
             InitializeTimer();
-    }
+        }
+
+        /// <summary>
+        /// Obsługuje zdarzenie kliknięcia przycisku 2 - zeruje obraz wynikowy.
+        /// </summary>
         private void button2_Click(object sender, EventArgs e) {
             pictureBox2.Image = null;
         }
 
+        /// <summary>
+        /// Obsługuje zdarzenie kliknięcia przycisku 1 - zapisuje obraz wynikowy w formacie BMP.
+        /// </summary>
         private void button1_Click(object sender, EventArgs e) {
             if (pictureBox2.Image != null) {
                 saveFileDialog1.Filter = "Image Files(*.bmp)|*.bmp";
@@ -53,31 +68,54 @@ namespace ConverterToNegative
             }
         }
 
+        /// <summary>
+        /// Obsługuje zdarzenie przesunięcia suwaka - aktualizuje etykietę z wartością suwaka.
+        /// </summary>
         private void trackBar1_Scroll(object sender, EventArgs e) {
             int currentValue = trackBar1.Value;
             label2.Text = currentValue.ToString();
         }
 
+        /// <summary>
+        /// Obsługuje zdarzenie kliknięcia przycisku 3 - otwiera okno dialogowe do wyboru pliku.
+        /// </summary>
         private void button3_Click(object sender, EventArgs e) {
             openFileDialog1.Filter = "Image Files(*.bmp)|*.bmp";
             openFileDialog1.ShowDialog();
         }
 
+        /// <summary>
+        /// Obsługuje zdarzenie wybrania pliku przez OpenFileDialog - wczytuje obraz do negatywu.
+        /// </summary>
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e) {
             pictureBox1.Image = new Bitmap(openFileDialog1.FileName);
         }
 
+
+        /// <summary>
+        /// Obsługuje zdarzenie przesunięcia suwaka 2 - aktualizuje etykietę z wartością suwaka.
+        /// </summary>
         private void trackBar2_Scroll(object sender, EventArgs e) {
             int currentValue = trackBar2.Value;
             label4.Text = currentValue.ToString();
         }
 
+        /// <summary>
+        /// Wybiera odpowiednią funkcję konwersji w zależności od wyboru użytkownika.
+        /// </summary>
         private Bitmap selectedConvertFunction(Bitmap originalImage, int degree) {
             return radioButton1.Checked ? ConvertToNegative(originalImage, degree) : ConvertToNegativeAsm(originalImage, degree);
         }
 
+        /// <summary>
+        /// Kolejka do przechowywania ostatnich pięciu czasów operacji.
+        /// </summary>
         private Queue<long> lastFiveTimes = new Queue<long>();
 
+        /// <summary>
+        /// Obsługuje zdarzenie kliknięcia przycisku 4 - przeprowadza konwersję obrazu i mierzy czas operacji
+        /// średni czas ostatnich pięciu operacji oraz ilość cykli procesora.
+        /// </summary>
         private void button4_Click(object sender, EventArgs e) {
             if (pictureBox1.Image != null) {
                 Stopwatch stopwatch = new Stopwatch();
@@ -106,7 +144,6 @@ namespace ConverterToNegative
 
                 label15.Text = $"{stopwatch.ElapsedTicks}";
             } else MessageBox.Show("Proszę wybrać obraz przed konwersją.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
         }
 
         /// <summary>
@@ -155,8 +192,6 @@ namespace ConverterToNegative
             return newImage;
         }
 
-        private System.Windows.Forms.Timer systemTimer;
-
         /// <summary>
         /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej biblioteki z określonym stopniem.
         /// </summary>
@@ -170,9 +205,16 @@ namespace ConverterToNegative
             systemTimer.Start();
         }
 
+        /// <summary>
+        /// Obsługuje zdarzenie systemowego timera - wyświetla bieżący czas systemowy.
+        /// </summary>
         private void systemTimer_Tick(object sender, EventArgs e) {
             DisplaySystemTime();
         }
+
+        /// <summary>
+        /// Wyświetla bieżący czas systemowy.
+        /// </summary>
         private void DisplaySystemTime() {
             DateTime currentTime = DateTime.Now;
             label13.Text = $"{currentTime.ToString()}";
