@@ -1,21 +1,33 @@
-﻿using System;
+﻿/*
+    Temat projektu: Image Converter to Negative
+    Krótki opis algorytmu: Aplikacja pobiera zdjęcie zapisane jako bitmapa, następnie piksel po pikselu przelicza wartości kolorów
+    RGB na ich wartości w negatywie wg. wzoru: 
+    newColor = ((100 - degree) * oldColor + (255 - oldColor) * degree) / 100
+    gdzie: 
+          newColor: to wartość negatywu
+          oldColor: kolor na wejściu
+          degree: stopień negatywu
+    Datę: 12.01.2024r
+    Semestr/Rok akademicki: se. V, r.a. 2023/2024
+    Nazwisko autora: Krzysztof Adam, Adam Kuraczyński, Bartłomiej Kędroń
+    Aktualną wersję programu: 1.0
+    Historia zmian: https://github.com/bartlomi/ConverterToNegative
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ConverterToNegative
 {
     public partial class Form1 : Form
     {
-    [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
+    [DllImport("ConverterToNegativeAsm.dll")]
     static extern int MyProc1(int a, int b);
     public Form1()
         {
