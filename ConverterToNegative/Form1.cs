@@ -1,16 +1,16 @@
 ﻿/*
     Temat projektu: Image Converter to Negative
-    Krótki opis algorytmu: Aplikacja pobiera zdjęcie zapisane jako bitmapa, następnie piksel po pikselu przelicza wartości kolorów
+    Krótki opis algorytmu: Aplikacja pobiera zdjęcie zapisane jako bitmapa, po czym piksel po pikselu przelicza wartości kolorów
     RGB na ich wartości w negatywie wg. wzoru: 
     newColor = ((100 - degree) * oldColor + (255 - oldColor) * degree) / 100
     gdzie: 
           newColor: to wartość negatywu
           oldColor: kolor na wejściu
           degree: stopień negatywu
-    Datę: 12.01.2024r
+    Data: 12.01.2024r
     Semestr/Rok akademicki: se. V, r.a. 2023/2024
     Nazwisko autora: Krzysztof Adam, Adam Kuraczyński, Bartłomiej Kędroń
-    Aktualną wersję programu: 1.0
+    Aktualną wersję programu: 2.4
     Historia zmian: https://github.com/bartlomi/ConverterToNegative
 */
 
@@ -50,7 +50,7 @@ namespace ConverterToNegative
         {
             if (pictureBox2.Image != null)
             {
-                // Otwórz okno dialogowe SaveFileDialog
+                // Otwarcie okna dialogowego SaveFileDialog
                 saveFileDialog1.Filter = "Image Files(*.bmp)|*.bmp";
                 saveFileDialog1.Title = "Zapisz obraz";
                 saveFileDialog1.ShowDialog();

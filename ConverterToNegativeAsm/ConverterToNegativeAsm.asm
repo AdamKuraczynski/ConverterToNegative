@@ -1,12 +1,12 @@
 ;    Temat projektu: Image Converter to Negative
-;    Krótki opis algorytmu: Aplikacja pobiera zdjêcie zapisane jako bitmapa, nastêpnie piksel po pikselu przelicza wartoœci kolorów
+;    Krótki opis algorytmu: Aplikacja pobiera zdjêcie zapisane jako bitmapa, po czym piksel po pikselu przelicza wartoœci kolorów
 ;    RGB na ich wartoœci w negatywie wg. wzoru: 
 ;    newColor = ((100 - degree) * oldColor + (255 - oldColor) * degree) / 100
 ;    gdzie: 
 ;          newColor: to wartoœæ negatywu
 ;          oldColor: kolor na wejœciu
 ;          degree: stopieñ negatywu
-;    Datê: 12.01.2024r
+;    Data: 12.01.2024r
 ;    Semestr/Rok akademicki: se. V, r.a. 2023/2024
 ;    Nazwisko autora: Krzysztof Adam, Adam Kuraczyñski, Bart³omiej Kêdroñ
 ;    Aktualn¹ wersjê programu: 1.1
