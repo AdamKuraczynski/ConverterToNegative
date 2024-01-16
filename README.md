@@ -22,7 +22,7 @@
 
 ❌ Sensowne użycie instrukcji wektorowych
 
-❌ Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
+✅ Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
 
 ✅ Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
 
