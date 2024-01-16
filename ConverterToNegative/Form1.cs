@@ -33,6 +33,7 @@ namespace ConverterToNegative
     /// </summary>
     public partial class Form1 : Form
     {
+        //[DllImport("ConverterToNegativeAsm.dll")]
         [DllImport("ConverterToNegativeAsm.dll")]
         static extern int MyProc1(int a, int b);
         private System.Windows.Forms.Timer systemTimer;
@@ -163,7 +164,7 @@ namespace ConverterToNegative
         /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
         /// <param name="degree">Stopień negatywu dla konwersji.</param>
         /// <returns>Obraz w negatywie.</returns>
-    unsafe
+        unsafe
         private Bitmap ConvertToNegative(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
         {
             // Validate degree parameter
