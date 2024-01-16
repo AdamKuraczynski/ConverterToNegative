@@ -22,6 +22,9 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Drawing.Imaging;
+using System.Threading;
 
 namespace ConverterToNegative
 {
@@ -92,19 +95,27 @@ namespace ConverterToNegative
         }
 
 
+        private int maxDegreeOfParallelism = 1;
         /// <summary>
         /// Obsługuje zdarzenie przesunięcia suwaka 2 - aktualizuje etykietę z wartością suwaka.
         /// </summary>
-        private void trackBar2_Scroll(object sender, EventArgs e) {
-            int currentValue = trackBar2.Value;
-            label4.Text = currentValue.ToString();
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            int[] allowedValues = new int[] { 1, 2, 4, 8, 16, 32, 64 };
+            int newValue = trackBar2.Value;
+            int nearestValue = allowedValues.OrderBy(v => Math.Abs(newValue - v)).First();
+            trackBar2.Value = nearestValue;
+
+            label4.Text = nearestValue.ToString();
+            maxDegreeOfParallelism = trackBar2.Value;
+
         }
 
         /// <summary>
         /// Wybiera odpowiednią funkcję konwersji w zależności od wyboru użytkownika.
         /// </summary>
-        private Bitmap selectedConvertFunction(Bitmap originalImage, int degree) {
-            return radioButton1.Checked ? ConvertToNegative(originalImage, degree) : ConvertToNegativeAsm(originalImage, degree);
+        private Bitmap selectedConvertFunction(Bitmap originalImage, int degree, int maxDegreeOfParallelism) {
+            return radioButton1.Checked ? ConvertToNegative(originalImage, degree, maxDegreeOfParallelism) : ConvertToNegativeAsm(originalImage, degree, maxDegreeOfParallelism);
         }
 
         /// <summary>
@@ -124,7 +135,7 @@ namespace ConverterToNegative
                 int degree = trackBar1.Value;
                 Bitmap originalImage = new Bitmap(pictureBox1.Image);
 
-                Bitmap convertedImage = selectedConvertFunction(originalImage, degree);
+                Bitmap convertedImage = selectedConvertFunction(originalImage, degree, maxDegreeOfParallelism);
 
                 pictureBox2.Image = convertedImage;
 
@@ -152,22 +163,47 @@ namespace ConverterToNegative
         /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
         /// <param name="degree">Stopień negatywu dla konwersji.</param>
         /// <returns>Obraz w negatywie.</returns>
-        private Bitmap ConvertToNegative(Bitmap originalImage, int degree)
+    unsafe
+        private Bitmap ConvertToNegative(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
         {
-            Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
-            for (int y = 0; y < originalImage.Height; y++) {
-                for (int x = 0; x < originalImage.Width; x++) {
-                    Color originalColor = originalImage.GetPixel(x, y);
+            // Validate degree parameter
+            degree = Math.Max(0, Math.Min(100, degree));
 
-                    int newR = (originalColor.R * (100 - degree) + (255 - originalColor.R) * degree) / 100;
-                    int newG = (originalColor.G * (100 - degree) + (255 - originalColor.G) * degree) / 100;
-                    int newB = (originalColor.B * (100 - degree) + (255 - originalColor.B) * degree) / 100;
+            // Create ParallelOptions with specified maxDegreeOfParallelism
+            ParallelOptions parallelOptions = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = maxDegreeOfParallelism
+            };
 
-                    newImage.SetPixel(x, y, Color.FromArgb(newR, newG, newB));
+            BitmapData bitmapData =
+                originalImage.LockBits(new Rectangle(0, 0, originalImage.Width,
+                originalImage.Height), ImageLockMode.ReadWrite, originalImage.PixelFormat);
+
+            int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(originalImage.PixelFormat) / 8;
+            int heightInPixels = bitmapData.Height;
+            int widthInBytes = bitmapData.Width * bytesPerPixel;
+
+            byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
+
+            Parallel.For(0, heightInPixels, parallelOptions, y =>
+            {
+                byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
+                for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
+                {
+                    int newR = (int)((currentLine[x + 2] * (100 - degree) + (255 - currentLine[x + 2]) * degree) / 100);
+                    int newG = (int)((currentLine[x + 1] * (100 - degree) + (255 - currentLine[x + 1]) * degree) / 100);
+                    int newB = (int)((currentLine[x] * (100 - degree) + (255 - currentLine[x]) * degree) / 100);
+
+                    currentLine[x + 2] = (byte)Math.Max(0, Math.Min(255, newR));
+                    currentLine[x + 1] = (byte)Math.Max(0, Math.Min(255, newG));
+                    currentLine[x] = (byte)Math.Max(0, Math.Min(255, newB));
                 }
-            }
-            return newImage;
-        }
+            });
+
+            originalImage.UnlockBits(bitmapData);
+
+            return originalImage;
+    }
 
         /// <summary>
         /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej asemblerowej biblioteki z określonym stopniem.
@@ -175,7 +211,7 @@ namespace ConverterToNegative
         /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
         /// <param name="degree">Stopień negatywu dla konwersji.</param>
         /// <returns>Obraz w negatywie.</returns>
-        private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree)
+        private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
         {
             Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
             for (int y = 0; y < originalImage.Height; y++) {
