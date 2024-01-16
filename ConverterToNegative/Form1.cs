@@ -33,8 +33,10 @@ namespace ConverterToNegative
     /// </summary>
     public partial class Form1 : Form
     {
-        //[DllImport("ConverterToNegativeAsm.dll")]
+        [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]  
         [DllImport("ConverterToNegativeAsm.dll")]
+        [DllImport("C:\Users\Adam\Source\Repos\bartlomi\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
+
         static extern int MyProc1(int a, int b);
         private System.Windows.Forms.Timer systemTimer;
 
@@ -170,41 +172,54 @@ namespace ConverterToNegative
             // Validate degree parameter
             degree = Math.Max(0, Math.Min(100, degree));
 
-            // Create ParallelOptions with specified maxDegreeOfParallelism
-            ParallelOptions parallelOptions = new ParallelOptions
+
+            int maxLogicalProcessors = Environment.ProcessorCount;
+
+            if (maxDegreeOfParallelism > maxLogicalProcessors)
             {
-                MaxDegreeOfParallelism = maxDegreeOfParallelism
-            };
-
-            BitmapData bitmapData =
-                originalImage.LockBits(new Rectangle(0, 0, originalImage.Width,
-                originalImage.Height), ImageLockMode.ReadWrite, originalImage.PixelFormat);
-
-            int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(originalImage.PixelFormat) / 8;
-            int heightInPixels = bitmapData.Height;
-            int widthInBytes = bitmapData.Width * bytesPerPixel;
-
-            byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
-
-            Parallel.For(0, heightInPixels, parallelOptions, y =>
+                MessageBox.Show("Wybrałeś wartość wątków większą niż ilość procesorów logicznych twojego komputera -> " + maxLogicalProcessors + " ", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            else
             {
-                byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
-                for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
+                // Create ParallelOptions with specified maxDegreeOfParallelism
+                ParallelOptions parallelOptions = new ParallelOptions
                 {
-                    int newR = (int)((currentLine[x + 2] * (100 - degree) + (255 - currentLine[x + 2]) * degree) / 100);
-                    int newG = (int)((currentLine[x + 1] * (100 - degree) + (255 - currentLine[x + 1]) * degree) / 100);
-                    int newB = (int)((currentLine[x] * (100 - degree) + (255 - currentLine[x]) * degree) / 100);
+                    MaxDegreeOfParallelism = maxDegreeOfParallelism
+                };
 
-                    currentLine[x + 2] = (byte)Math.Max(0, Math.Min(255, newR));
-                    currentLine[x + 1] = (byte)Math.Max(0, Math.Min(255, newG));
-                    currentLine[x] = (byte)Math.Max(0, Math.Min(255, newB));
-                }
-            });
+                BitmapData bitmapData =
+                    originalImage.LockBits(new Rectangle(0, 0, originalImage.Width,
+                    originalImage.Height), ImageLockMode.ReadWrite, originalImage.PixelFormat);
 
-            originalImage.UnlockBits(bitmapData);
+                int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(originalImage.PixelFormat) / 8;
+                int heightInPixels = bitmapData.Height;
+                int widthInBytes = bitmapData.Width * bytesPerPixel;
 
-            return originalImage;
-    }
+                byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
+
+                Parallel.For(0, heightInPixels, parallelOptions, y =>
+                {
+                    byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
+                    for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
+                    {
+                        int newR = (int)((currentLine[x + 2] * (100 - degree) + (255 - currentLine[x + 2]) * degree) / 100);
+                        int newG = (int)((currentLine[x + 1] * (100 - degree) + (255 - currentLine[x + 1]) * degree) / 100);
+                        int newB = (int)((currentLine[x] * (100 - degree) + (255 - currentLine[x]) * degree) / 100);
+
+                        currentLine[x + 2] = (byte)Math.Max(0, Math.Min(255, newR));
+                        currentLine[x + 1] = (byte)Math.Max(0, Math.Min(255, newG));
+                        currentLine[x] = (byte)Math.Max(0, Math.Min(255, newB));
+                    }
+                });
+
+                originalImage.UnlockBits(bitmapData);
+
+                return originalImage;
+            }
+            
+        }
+
 
         /// <summary>
         /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej asemblerowej biblioteki z określonym stopniem.
@@ -212,7 +227,9 @@ namespace ConverterToNegative
         /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
         /// <param name="degree">Stopień negatywu dla konwersji.</param>
         /// <returns>Obraz w negatywie.</returns>
-        private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
+        /// 
+
+        /*private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
         {
             Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
             for (int y = 0; y < originalImage.Height; y++) {
@@ -227,15 +244,68 @@ namespace ConverterToNegative
               }
             } 
             return newImage;
-        }
+        }*/
+        unsafe
+        private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
+    {
+      // Validate degree parameter
+      degree = Math.Max(0, Math.Min(100, degree));
+      
+      int maxLogicalProcessors = Environment.ProcessorCount;
 
-        /// <summary>
-        /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej biblioteki z określonym stopniem.
-        /// </summary>
-        /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
-        /// <param name="degree">Stopień negatywu dla konwersji.</param>
-        /// <returns>Obraz w negatywie.</returns>
-        private void InitializeTimer() {
+            if (maxDegreeOfParallelism > maxLogicalProcessors)
+            {
+                MessageBox.Show("Wybrałeś wartość wątków większą niż ilość procesorów logicznych twojego komputera -> " + maxLogicalProcessors + " ", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            else
+            {
+                // Create ParallelOptions with specified maxDegreeOfParallelism
+                ParallelOptions parallelOptions = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = maxDegreeOfParallelism
+                };
+
+                BitmapData bitmapData =
+                    originalImage.LockBits(new Rectangle(0, 0, originalImage.Width,
+                    originalImage.Height), ImageLockMode.ReadWrite, originalImage.PixelFormat);
+
+                int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(originalImage.PixelFormat) / 8;
+                int heightInPixels = bitmapData.Height;
+                int widthInBytes = bitmapData.Width * bytesPerPixel;
+
+                byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
+
+                Parallel.For(0, heightInPixels, parallelOptions, y =>
+                {
+                    byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
+                    for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
+                    {
+                        //int newR = MyProc1((int)currentLine[x + 2], degree);
+                        //int newG = MyProc1((int)currentLine[x + 1], degree);
+                        //int newB = MyProc1((int)currentLine[x], degree);
+
+                        currentLine[x + 2] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x + 2], degree)));
+                        currentLine[x + 1] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x + 1], degree)));
+                        currentLine[x] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x], degree)));
+                    }
+                });
+
+                originalImage.UnlockBits(bitmapData);
+                return originalImage;
+            }
+
+        }
+     
+
+
+    /// <summary>
+    /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej biblioteki z określonym stopniem.
+    /// </summary>
+    /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
+    /// <param name="degree">Stopień negatywu dla konwersji.</param>
+    /// <returns>Obraz w negatywie.</returns>
+    private void InitializeTimer() {
             systemTimer = new System.Windows.Forms.Timer();
             systemTimer.Tick += new EventHandler(systemTimer_Tick);
             systemTimer.Interval = 1000;

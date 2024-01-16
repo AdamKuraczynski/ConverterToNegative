@@ -22,9 +22,9 @@
 
 ❌ Sensowne użycie instrukcji wektorowych
 
-❌ Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
+✅ Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
 
-❌ Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
+✅ Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
 
 ✅ Projekt realizowany w systemie kontroli wersji (np. GitHub!)
 
@@ -46,7 +46,7 @@
 
 ✅ Karta projektu (Waga: 1)
 
-❌ Prezentacja (Waga: 1)
+✅ Prezentacja (Waga: 1)
 
 ❌ Kod (Waga: 2)
 
