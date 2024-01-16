@@ -33,7 +33,7 @@ namespace ConverterToNegative
     /// </summary>
     public partial class Form1 : Form
     {
-        [DllImport("ConverterToNegativeAsm.dll")]
+        [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
         static extern int MyProc1(int a, int b);
         private System.Windows.Forms.Timer systemTimer;
 
@@ -205,36 +205,80 @@ namespace ConverterToNegative
             return originalImage;
     }
 
-        /// <summary>
-        /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej asemblerowej biblioteki z określonym stopniem.
-        /// </summary>
-        /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
-        /// <param name="degree">Stopień negatywu dla konwersji.</param>
-        /// <returns>Obraz w negatywie.</returns>
+    /// <summary>
+    /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej asemblerowej biblioteki z określonym stopniem.
+    /// </summary>
+    /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
+    /// <param name="degree">Stopień negatywu dla konwersji.</param>
+    /// <returns>Obraz w negatywie.</returns>
+    /// 
+    
+    /*private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
+    {
+        Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
+        for (int y = 0; y < originalImage.Height; y++) {
+          for (int x = 0; x < originalImage.Width; x++) {
+            Color originalColor = originalImage.GetPixel(x, y);
+
+            int newAsmR = MyProc1(originalColor.R, degree);
+            int newAsmG = MyProc1(originalColor.G, degree);
+            int newAsmB = MyProc1(originalColor.B, degree);
+
+            newImage.SetPixel(x, y, Color.FromArgb(newAsmR, newAsmG, newAsmB));
+          }
+        } 
+        return newImage;
+    }*/
+        unsafe
         private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
+    {
+      // Validate degree parameter
+      degree = Math.Max(0, Math.Min(100, degree));
+
+      // Create ParallelOptions with specified maxDegreeOfParallelism
+      ParallelOptions parallelOptions = new ParallelOptions
+      {
+        MaxDegreeOfParallelism = maxDegreeOfParallelism
+      };
+
+      BitmapData bitmapData =
+          originalImage.LockBits(new Rectangle(0, 0, originalImage.Width,
+          originalImage.Height), ImageLockMode.ReadWrite, originalImage.PixelFormat);
+
+      int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(originalImage.PixelFormat) / 8;
+      int heightInPixels = bitmapData.Height;
+      int widthInBytes = bitmapData.Width * bytesPerPixel;
+
+      byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
+
+      Parallel.For(0, heightInPixels, parallelOptions, y =>
+      {
+        byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
+        for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
         {
-            Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
-            for (int y = 0; y < originalImage.Height; y++) {
-              for (int x = 0; x < originalImage.Width; x++) {
-                Color originalColor = originalImage.GetPixel(x, y);
+          //int newR = MyProc1((int)currentLine[x + 2], degree);
+          //int newG = MyProc1((int)currentLine[x + 1], degree);
+          //int newB = MyProc1((int)currentLine[x], degree);
 
-                int newAsmR = MyProc1(originalColor.R, degree);
-                int newAsmG = MyProc1(originalColor.G, degree);
-                int newAsmB = MyProc1(originalColor.B, degree);
-
-                newImage.SetPixel(x, y, Color.FromArgb(newAsmR, newAsmG, newAsmB));
-              }
-            } 
-            return newImage;
+          currentLine[x + 2] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x + 2], degree)));
+          currentLine[x + 1] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x + 1], degree)));
+          currentLine[x] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x], degree)));
         }
+      });
 
-        /// <summary>
-        /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej biblioteki z określonym stopniem.
-        /// </summary>
-        /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
-        /// <param name="degree">Stopień negatywu dla konwersji.</param>
-        /// <returns>Obraz w negatywie.</returns>
-        private void InitializeTimer() {
+      originalImage.UnlockBits(bitmapData);
+
+      return originalImage;
+    }
+
+
+    /// <summary>
+    /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej biblioteki z określonym stopniem.
+    /// </summary>
+    /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
+    /// <param name="degree">Stopień negatywu dla konwersji.</param>
+    /// <returns>Obraz w negatywie.</returns>
+    private void InitializeTimer() {
             systemTimer = new System.Windows.Forms.Timer();
             systemTimer.Tick += new EventHandler(systemTimer_Tick);
             systemTimer.Interval = 1000;
