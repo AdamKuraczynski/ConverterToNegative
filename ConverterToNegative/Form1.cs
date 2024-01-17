@@ -33,7 +33,7 @@ namespace ConverterToNegative
     /// </summary>
     public partial class Form1 : Form
     {
-        [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]  
+        [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
         static extern void MyProc1(byte[] a, byte[] b, byte[] c);
         [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
         static extern void MyProc2(byte[] a, byte[] b, byte[] c);
@@ -184,24 +184,30 @@ namespace ConverterToNegative
             }
             else
             {
-                // Create ParallelOptions with specified maxDegreeOfParallelism
                 ParallelOptions parallelOptions = new ParallelOptions
                 {
                     MaxDegreeOfParallelism = maxDegreeOfParallelism
                 };
 
+                // zablokuj bitmape w pamieci systemu
                 BitmapData bitmapData =
                     originalImage.LockBits(new Rectangle(0, 0, originalImage.Width,
                     originalImage.Height), ImageLockMode.ReadWrite, originalImage.PixelFormat);
 
+                // definicja zmiennych dla bajtow na pixel, wysokosci w pixelach i szerokosci w bajtach
                 int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(originalImage.PixelFormat) / 8;
                 int heightInPixels = bitmapData.Height;
                 int widthInBytes = bitmapData.Width * bytesPerPixel;
 
+                // definicja wskaznika na pierwszy pixel zablokowanej bitmapu
+                // Scan0 odpowiedzialny jest za pierwszy pixel
                 byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
 
+                // petla przechodzaca przez kazdy pixel uzywajac wskaznikow
+                // Parallel.For - petla rownolegla
                 Parallel.For(0, heightInPixels, parallelOptions, y =>
                 {
+                    // Stride to szerokosc w bajtach jednego wiersza bitmapy
                     byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
                     for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
                     {
@@ -250,7 +256,6 @@ namespace ConverterToNegative
         unsafe
         private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
     {
-      // Validate degree parameter
       degree = Math.Max(0, Math.Min(100, degree));
       
       int maxLogicalProcessors = Environment.ProcessorCount;
@@ -262,7 +267,6 @@ namespace ConverterToNegative
             }
             else
             {
-                // Create ParallelOptions with specified maxDegreeOfParallelism
                 ParallelOptions parallelOptions = new ParallelOptions
                 {
                     MaxDegreeOfParallelism = maxDegreeOfParallelism
