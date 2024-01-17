@@ -32,27 +32,55 @@
 ;   - R8: Tymczasowy rejestr wykorzystywany w obliczeniach.
 ;   - RDX: Zostaje wyzerowany przed dzieleniem.
 
-MyProc1 proc 
+.code
+MyProc1 PROC
+; color rcx -> xmm
+; stala rdx -> xmm
+; stop	r8 -> xmm
 
-; wartosc koloru (x1) 	RCX
-; stopien negatywu (x2) RDX
-; wyjœcie RAX
+; wyjscie r8
 
-mov RAX, 100	;100 do RAX
-sub RAX, RDX	;100 - x2
-imul RAX, RCX	;(100 - x2) * x1
+movdqu	xmm0, [rcx]
+movdqu	xmm1, [rdx]
 
-mov R8, 255		;255 do RBX
-sub R8, RCX		;255 - x1
-imul R8, RDX	;(255 - x1) * x2
+paddb		xmm0, xmm1
 
-add RAX, R8		;(100 - x2) * x1 + (255 - x1) * x2
+movdqu	[r8], xmm0
 
-sub RDX, RDX	;zerowanie RDX (konieczne przy dzieleniu)
-mov RCX, 100	;100 do RCX
+ret
+MyProc1 ENDP
 
-div RCX				;((100 - x2) * x1 + (255 - x1) * x2) / 100
+MyProc2 PROC
+movdqu	xmm0, [rcx]
+movdqu	xmm1, [rdx]
 
-ret 
-MyProc1 endp 
+psubb	xmm0, xmm1
+
+movdqu	[r8], xmm0
+
+ret
+MyProc2 ENDP
+
+MyProc3 PROC
+
+    movdqu xmm0, [rcx]     ; Za³aduj pierwsz¹ tablice do xmm0
+    movdqu xmm1, [rdx]     ; Za³aduj drug¹ tablice do xmm1
+    pxor xmm2, xmm2        ; Wyzeruj xmm2 (pomaga w mno¿eniu)
+
+    ; Mno¿enie ni¿szych bitów
+    punpcklbw xmm0, xmm2   ; Wypakuj ni¿sze bity do xmm0
+    punpcklbw xmm1, xmm2   ; Wypakuj ni¿sze bity do xmm1
+    pmullw xmm0, xmm1      ; Pomnó¿ xmm0 i xmm1
+
+    ; Mno¿enie wy¿szych bitów
+    punpckhbw xmm3, xmm2   ; Wypakuj wy¿sze bity do xmm3
+    punpckhbw xmm4, xmm2   ; Wypakuj ni¿sze bity do xmm4
+    pmullw xmm3, xmm4      ; Pomnó¿ xmm3 i xmm4
+
+    ; Combine the results
+    packuswb xmm0, xmm3    ; Zapisz wynik do xmm0
+    movdqu [r8], xmm0      ; Zapisz wynik w podanej tablicy
+    
+ret
+MyProc3 ENDP
 end

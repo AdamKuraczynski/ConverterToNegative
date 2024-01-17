@@ -1,2 +1,4 @@
 LIBRARY ConverterToNegativeAsm
 EXPORTS MyProc1
+EXPORTS MyProc2
+EXPORTS MyProc3

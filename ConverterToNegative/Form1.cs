@@ -34,11 +34,13 @@ namespace ConverterToNegative
     public partial class Form1 : Form
     {
         [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]  
-        [DllImport("ConverterToNegativeAsm.dll")]
-        [DllImport("C:\Users\Adam\Source\Repos\bartlomi\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
+        static extern void MyProc1(byte[] a, byte[] b, byte[] c);
+        [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
+        static extern void MyProc2(byte[] a, byte[] b, byte[] c);
+        [DllImport(@"C:\Users\DELL\Desktop\ConverterToNegative\x64\Debug\ConverterToNegativeAsm.dll")]
+        static extern void MyProc3(byte[] a, byte[] b, byte[] c);
 
-        static extern int MyProc1(int a, int b);
-        private System.Windows.Forms.Timer systemTimer;
+    private System.Windows.Forms.Timer systemTimer;
 
         /// <summary>
         /// Konstruktor głównej formy.
@@ -275,20 +277,36 @@ namespace ConverterToNegative
                 int widthInBytes = bitmapData.Width * bytesPerPixel;
 
                 byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
+        byte[] stala1 = { 100, 100, 100 };
+        byte[] stala2 = { 255, 255, 255 };
+        byte[] degreeB = { (byte)degree, (byte)degree, (byte)degree };
 
-                Parallel.For(0, heightInPixels, parallelOptions, y =>
+        Parallel.For(0, heightInPixels, parallelOptions, y =>
                 {
                     byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
-                    for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
+                  byte[] currentLineElements = { currentLine[0], currentLine[1], currentLine[2] };
+                  
+                  
+                  for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
                     {
-                        //int newR = MyProc1((int)currentLine[x + 2], degree);
-                        //int newG = MyProc1((int)currentLine[x + 1], degree);
-                        //int newB = MyProc1((int)currentLine[x], degree);
+                    byte[] wynik1 = { 0, 0, 0 };
+                    byte[] wynik2 = { 0, 0, 0 };
+                    byte[] wynik3 = { 0, 0, 0 };
+                    byte[] wynik4 = { 0, 0, 0 };
+                    byte[] wynik5 = { 0, 0, 0 };
+                    MyProc2(stala1, degreeB, wynik1);
+                    MyProc2(stala2, currentLineElements, wynik2);
+                    MyProc3(currentLineElements, wynik1, wynik3);
+                    MyProc3(wynik2, degreeB, wynik4);
+                    MyProc1(wynik3, wynik4, wynik5);
+                    //int newR = (int)((currentLine[x + 2] * (100 - degree) + (255 - currentLine[x + 2]) * degree) / 100);
+                    //int newG = (int)((currentLine[x + 1] * (100 - degree) + (255 - currentLine[x + 1]) * degree) / 100);
+                    //int newB = (int)((currentLine[x] * (100 - degree) + (255 - currentLine[x]) * degree) / 100);
 
-                        currentLine[x + 2] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x + 2], degree)));
-                        currentLine[x + 1] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x + 1], degree)));
-                        currentLine[x] = (byte)Math.Max(0, Math.Min(255, MyProc1((int)currentLine[x], degree)));
-                    }
+                    currentLine[x + 2] = (byte)(wynik5[2] / 100);
+                    currentLine[x + 2] = (byte)(wynik5[1] / 100);
+                    currentLine[x + 2] = (byte)(wynik5[0] / 100);
+                  }
                 });
 
                 originalImage.UnlockBits(bitmapData);
