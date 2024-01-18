@@ -1,5 +1,7 @@
 ### Wymagania: 
 
+❔ Sensowne użycie instrukcji wektorowych
+
 ✅ Przygotowanie interfejsu użytkownika
 
 ✅ Działająca aplikacja
@@ -10,7 +12,7 @@
 
 ✅ Język wysokiego poziomu
 
-❌ ASM z instrukcjami wektorowymi
+✅ ASM z instrukcjami wektorowymi
 
 ✅ Pomiar czasu (z uwzględnieniem jednostek):
 
@@ -20,7 +22,6 @@
 
 ✅ Uśredniony wynik z 5 wywołań
 
-❌ Sensowne użycie instrukcji wektorowych
 
 ✅ Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
 
@@ -46,7 +47,7 @@
 
 ✅ Karta projektu (Waga: 1)
 
-✅ Prezentacja (Waga: 1)
+✅ Prezentacja (Waga: 1) -> 5
 
 ❌ Kod (Waga: 2)
 
