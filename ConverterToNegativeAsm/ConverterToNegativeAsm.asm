@@ -40,46 +40,46 @@ MyProc1 PROC
 
 ; wyjscie r8
 
-movdqu	xmm0, [rcx]
-movdqu	xmm1, [rdx]
+movdqu	xmm0, [rcx]     ; Pierwsza tablica do xmm0
+movdqu	xmm1, [rdx]     ; Druga tablica do xmm0
 
-paddb		xmm0, xmm1
+paddb		xmm0, xmm1      ; Dodawanie
 
-movdqu	[r8], xmm0
+movdqu	[r8], xmm0      ; Wynik do tablicy "zwracajacej"
 
 ret
 MyProc1 ENDP
 
 MyProc2 PROC
-movdqu	xmm0, [rcx]
-movdqu	xmm1, [rdx]
+movdqu	xmm0, [rcx]     ; Pierwsza tablica do xmm0
+movdqu	xmm1, [rdx]     ; Druga tablica do xmm0
 
-psubb	xmm0, xmm1
+psubb	xmm0, xmm1        ; Odejmowanie
 
-movdqu	[r8], xmm0
+movdqu	[r8], xmm0      ; Wynik do tablicy "zwracajacej"
 
 ret
 MyProc2 ENDP
 
 MyProc3 PROC
 
-    movdqu xmm0, [rcx]     ; Za³aduj pierwsz¹ tablice do xmm0
-    movdqu xmm1, [rdx]     ; Za³aduj drug¹ tablice do xmm1
-    pxor xmm2, xmm2        ; Wyzeruj xmm2 (pomaga w mno¿eniu)
+movdqu xmm0, [rcx]     ; Pierwsza tablica do xmm0
+movdqu xmm1, [rdx]     ; Druga tablica do xmm1
+pxor xmm2, xmm2        ; Zerowanie xmm2
 
-    ; Mno¿enie ni¿szych bitów
-    punpcklbw xmm0, xmm2   ; Wypakuj ni¿sze bity do xmm0
-    punpcklbw xmm1, xmm2   ; Wypakuj ni¿sze bity do xmm1
-    pmullw xmm0, xmm1      ; Pomnó¿ xmm0 i xmm1
+; Mno¿enie ni¿szych bitów
+punpcklbw xmm0, xmm2   ; Ni¿sze bity do xmm0
+punpcklbw xmm1, xmm2   ; Ni¿sze bity do xmm1
+pmullw xmm0, xmm1      ; Mno¿enie xmm0 i xmm1
 
-    ; Mno¿enie wy¿szych bitów
-    punpckhbw xmm3, xmm2   ; Wypakuj wy¿sze bity do xmm3
-    punpckhbw xmm4, xmm2   ; Wypakuj ni¿sze bity do xmm4
-    pmullw xmm3, xmm4      ; Pomnó¿ xmm3 i xmm4
+; Mno¿enie wy¿szych bitów
+punpckhbw xmm3, xmm2   ; Wy¿sze bity do xmm3
+punpckhbw xmm4, xmm2   ; Wy¿sze bity do xmm4
+pmullw xmm3, xmm4      ; Mno¿enie xmm3 i xmm4
 
-    ; Combine the results
-    packuswb xmm0, xmm3    ; Zapisz wynik do xmm0
-    movdqu [r8], xmm0      ; Zapisz wynik w podanej tablicy
+; Combine the results
+packuswb xmm0, xmm3    ; Wynik do xmm0
+movdqu [r8], xmm0      ; Wynik do tablicy "zwracajacej"
     
 ret
 MyProc3 ENDP

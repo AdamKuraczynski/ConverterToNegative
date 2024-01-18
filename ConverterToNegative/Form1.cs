@@ -229,96 +229,44 @@ namespace ConverterToNegative
         }
 
 
-        /// <summary>
-        /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej asemblerowej biblioteki z określonym stopniem.
-        /// </summary>
-        /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
-        /// <param name="degree">Stopień negatywu dla konwersji.</param>
-        /// <returns>Obraz w negatywie.</returns>
-        /// 
-
-        /*private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
-        {
-            Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
-            for (int y = 0; y < originalImage.Height; y++) {
-              for (int x = 0; x < originalImage.Width; x++) {
-                Color originalColor = originalImage.GetPixel(x, y);
-
-                int newAsmR = MyProc1(originalColor.R, degree);
-                int newAsmG = MyProc1(originalColor.G, degree);
-                int newAsmB = MyProc1(originalColor.B, degree);
-
-                newImage.SetPixel(x, y, Color.FromArgb(newAsmR, newAsmG, newAsmB));
-              }
-            } 
-            return newImage;
-        }*/
-        unsafe
-        private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
+    /// <summary>
+    /// Konwertuje podany oryginalny obraz na negatyw za pomocą zewnętrznej asemblerowej biblioteki z określonym stopniem.
+    /// </summary>
+    /// <param name="originalImage">Oryginalny obraz do konwersji.</param>
+    /// <param name="degree">Stopień negatywu dla konwersji.</param>
+    /// <returns>Obraz w negatywie.</returns>
+    /// 
+    unsafe
+    private Bitmap ConvertToNegativeAsm(Bitmap originalImage, int degree, int maxDegreeOfParallelism)
     {
-      degree = Math.Max(0, Math.Min(100, degree));
-      
-      int maxLogicalProcessors = Environment.ProcessorCount;
+      Bitmap newImage = new Bitmap(originalImage.Width, originalImage.Height);
+      byte[] degreeB = { (byte)degree, (byte)degree, (byte)degree };
+      byte[] stala1 = { 255, 255, 255 };
+      byte[] stala2 = { 100, 100, 100 };
+      byte[] wynik1 = { 0, 0, 0 };
+      byte[] wynik2 = { 0, 0, 0 };
 
-            if (maxDegreeOfParallelism > maxLogicalProcessors)
-            {
-                MessageBox.Show("Wybrałeś wartość wątków większą niż ilość procesorów logicznych twojego komputera -> " + maxLogicalProcessors + " ", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            else
-            {
-                ParallelOptions parallelOptions = new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = maxDegreeOfParallelism
-                };
+      for (int y = 0; y < originalImage.Height; y++)
+      {
+        for (int x = 0; x < originalImage.Width; x++)
+        {
+          Color originalColor = originalImage.GetPixel(x, y);
+          byte[] originalColorB = { originalColor.R, originalColor.G, originalColor.B };
 
-                BitmapData bitmapData =
-                    originalImage.LockBits(new Rectangle(0, 0, originalImage.Width,
-                    originalImage.Height), ImageLockMode.ReadWrite, originalImage.PixelFormat);
+          MyProc2(stala2, degreeB, wynik1);
+          MyProc2(stala1, originalColorB, wynik2);
 
-                int bytesPerPixel = System.Drawing.Bitmap.GetPixelFormatSize(originalImage.PixelFormat) / 8;
-                int heightInPixels = bitmapData.Height;
-                int widthInBytes = bitmapData.Width * bytesPerPixel;
+          int newR = (originalColor.R * wynik1[0] + wynik2[0] * degree) / 100;
+          int newG = (originalColor.G * wynik1[1] + wynik2[1] * degree) / 100;
+          int newB = (originalColor.B * wynik1[2] + wynik2[2] * degree) / 100;
 
-                byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
-        byte[] stala1 = { 100, 100, 100 };
-        byte[] stala2 = { 255, 255, 255 };
-        byte[] degreeB = { (byte)degree, (byte)degree, (byte)degree };
-
-        Parallel.For(0, heightInPixels, parallelOptions, y =>
-                {
-                    byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
-                  byte[] currentLineElements = { currentLine[0], currentLine[1], currentLine[2] };
-                  
-                  
-                  for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
-                    {
-                    byte[] wynik1 = { 0, 0, 0 };
-                    byte[] wynik2 = { 0, 0, 0 };
-                    byte[] wynik3 = { 0, 0, 0 };
-                    byte[] wynik4 = { 0, 0, 0 };
-                    byte[] wynik5 = { 0, 0, 0 };
-                    MyProc2(stala1, degreeB, wynik1);
-                    MyProc2(stala2, currentLineElements, wynik2);
-                    MyProc3(currentLineElements, wynik1, wynik3);
-                    MyProc3(wynik2, degreeB, wynik4);
-                    MyProc1(wynik3, wynik4, wynik5);
-                    //int newR = (int)((currentLine[x + 2] * (100 - degree) + (255 - currentLine[x + 2]) * degree) / 100);
-                    //int newG = (int)((currentLine[x + 1] * (100 - degree) + (255 - currentLine[x + 1]) * degree) / 100);
-                    //int newB = (int)((currentLine[x] * (100 - degree) + (255 - currentLine[x]) * degree) / 100);
-
-                    currentLine[x + 2] = (byte)(wynik5[2] / 100);
-                    currentLine[x + 2] = (byte)(wynik5[1] / 100);
-                    currentLine[x + 2] = (byte)(wynik5[0] / 100);
-                  }
-                });
-
-                originalImage.UnlockBits(bitmapData);
-                return originalImage;
-            }
-
+          newImage.SetPixel(x, y, Color.FromArgb(newR, newG, newB));
         }
-     
+      }
+
+      return newImage;
+    }
+
 
 
     /// <summary>
