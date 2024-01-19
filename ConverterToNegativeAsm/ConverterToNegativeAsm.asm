@@ -7,30 +7,28 @@
 ;          oldColor: kolor na wejœciu
 ;          degree: stopieñ negatywu
 ;    Data: 12.01.2024r
-;    Semestr/Rok akademicki: se. V, r.a. 2023/2024
+;    Semestr/Rok akademicki: sem. V, r.a. 2023/2024
 ;    Nazwisko autora: Krzysztof Adam, Adam Kuraczyñski, Bart³omiej Kêdroñ
 ;    Aktualn¹ wersjê programu: 1.0
 ;    Historia zmian: https://github.com/bartlomi/ConverterToNegative
 
 .code 
 
-; MyProc1 - Procedura wykonuj¹ca konwersjê koloru na negatyw z uwzglêdnieniem stopnia negatywu
-
 ; Opis procedury:
-;   MyProc1 jest procedur¹ odpowiedzialn¹ za konwersjê koloru piksela obrazu na jego negatyw,
-;   przy uwzglêdnieniu stopnia negatywu okreœlonego przez parametr wejœciowy.
+;   Na ca³oœæ programu w asemblerze sk³adaj¹ siê trzy procedury: wektorowego dodawania, odejmowania i mno¿enie, konieczne aby krok po kroku wykonaæ opisany
+;   powy¿ej algorytm.
+
+; Kolejnoœæ wykonywania procedur: pierwsze odejmowanie -> drugie odejmowanie -> pierwsze mno¿enie -> drugie mno¿enie -> dodawanie
+
+; MyProc1 - Procedura wykonuj¹ca operacjê wektorow¹ dodawania
 
 ; Parametry wejœciowe:
-;   - RCX (x1): Wartoœæ koloru piksela (0-255), gdzie 0 to pe³ny kolor czarny, a 255 to pe³ny kolor bia³y.
-;   - RDX (x2): Stopieñ negatywu (0-100), gdzie 0 oznacza brak negatywu, a 100 to pe³ny negatyw.
+;   - RCX (x1): Tablica typu byte
+;   - RDX (x2): Tablica typu byte
+;   - R8 (wynik): tablica wynikowa typu byte
 
 ; Parametry wyjœciowe:
-;   - RAX: Skonwertowana wartoœæ koloru piksela po zastosowaniu negatywu.
-
-; Rejestry i znaczniki (flagi) ulegaj¹ce zmianie:
-;   - RAX: Zawiera skonwertowan¹ wartoœæ koloru piksela.
-;   - R8: Tymczasowy rejestr wykorzystywany w obliczeniach.
-;   - RDX: Zostaje wyzerowany przed dzieleniem.
+;   - R8: Tablica typu byte
 
 .code
 MyProc1 PROC
@@ -50,6 +48,16 @@ movdqu	[r8], xmm0      ; Wynik do tablicy "zwracajacej"
 ret
 MyProc1 ENDP
 
+; MyProc2 - Procedura wykonuj¹ca operacjê wektorow¹ odejmowania
+
+; Parametry wejœciowe:
+;   - RCX (x1): Tablica typu byte
+;   - RDX (x2): Tablica typu byte
+;   - R8 (wynik): tablica wynikowa typu byte
+
+; Parametry wyjœciowe:
+;   - R8: Tablica typu byte
+
 MyProc2 PROC
 movdqu	xmm0, [rcx]     ; Pierwsza tablica do xmm0
 movdqu	xmm1, [rdx]     ; Druga tablica do xmm0
@@ -60,6 +68,16 @@ movdqu	[r8], xmm0      ; Wynik do tablicy "zwracajacej"
 
 ret
 MyProc2 ENDP
+
+; MyProc3 - Procedura wykonuj¹ca operacjê wektorow¹ mno¿enia
+
+; Parametry wejœciowe:
+;   - RCX (x1): Tablica typu byte
+;   - RDX (x2): Tablica typu byte
+;   - R8 (wynik): tablica wynikowa typu byte
+
+; Parametry wyjœciowe:
+;   - R8: Tablica typu byte
 
 MyProc3 PROC
 
