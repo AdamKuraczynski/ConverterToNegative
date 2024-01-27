@@ -2,30 +2,25 @@
 
 ❔ Sensowne użycie instrukcji wektorowych
 
+❌ Brak dla ASM -> Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
+
+❌ Brak dla ASM -> Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
+
+❌ Brak dla C# -> 2 tożsame biblioteki
+
+✅ ASM z instrukcjami wektorowymi
+
 ✅ Przygotowanie interfejsu użytkownika
 
 ✅ Działająca aplikacja
 
 ✅ Użycie dowolnej technologii GUI
 
-✅ 2 tożsame biblioteki:
-
-✅ Język wysokiego poziomu
-
-✅ ASM z instrukcjami wektorowymi
-
 ✅ Pomiar czasu (z uwzględnieniem jednostek):
 
 ✅ 3 zestawy danych
 
-✅ 2 biblioteki
-
 ✅ Uśredniony wynik z 5 wywołań
-
-
-✅ Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
-
-✅ Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
 
 ✅ Projekt realizowany w systemie kontroli wersji (np. GitHub!)
 
@@ -49,6 +44,6 @@
 
 ✅ Prezentacja (Waga: 1) -> 5
 
-❌ Kod (Waga: 2)
+✅ Kod (Waga: 2)
 
 ❌ Raport (Waga: 2)
