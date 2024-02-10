@@ -103,5 +103,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConverterToNegativeC#\ConverterToNegativeC#.csproj">
+      <Project>{7a7b619b-9fa9-4efb-8e92-285786713e40}</Project>
+      <Name>ConverterToNegativeC#</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
