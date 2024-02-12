@@ -1,8 +1,14 @@
+### Zrobienie projektu zgodnego z wymaganiami prowadzącego składa się z:
+
+✅ Interfejsu użytkownika z możliwością wybrania biblioteki wykonującej program
+
+✅ 2 bibliotek: wysokiego poziomu i asemblerowej
+
+✅ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
+
+✅ Zestawu kontrolek (suwaki, przyciski, itp..., w tym do obsługi wielowątkowości)
+
 ### Wymagania: 
-
-❌ Brak dla ASM -> Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
-
-❌ Brak dla ASM -> Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
 
 ✅ Brak dla C# -> 2 tożsame biblioteki
 
@@ -26,22 +32,6 @@
 
 ✅ Porównywalny udział osób w projekcie
 
-### Zrobienie projektu zgodnego z wymaganiami prowadzącego składa się z:
+❌ Brak dla ASM -> Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
 
-✅ Interfejsu użytkownika z możliwością wybrania biblioteki wykonującej program
-
-✅ 2 bibliotek: wysokiego poziomu i asemblerowej
-
-✅ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
-
-✅ Zestawu kontrolek (suwaki, przyciski, itp..., w tym do obsługi wielowątkowości)
-
-### Projekt wrzuca się na PZE. Elementy:
-
-✅ Karta projektu (Waga: 1)
-
-✅ Prezentacja (Waga: 1) -> 5
-
-✅ Kod (Waga: 2)
-
-❌ Raport (Waga: 2)
+❌ Brak dla ASM -> Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
