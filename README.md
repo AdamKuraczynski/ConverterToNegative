@@ -1,37 +1,18 @@
-### Zrobienie projektu zgodnego z wymaganiami prowadzącego składa się z:
+# ConverterToNegative  
 
-✅ Interfejsu użytkownika z możliwością wybrania biblioteki wykonującej program
+C# and Assembly based program used to convert .bmp images to negative on a scale.
 
-✅ 2 bibliotek: wysokiego poziomu i asemblerowej
+#### Details regarding program:
 
-✅ Okna informacji o czasie (odmierzanie czasu, czas systemowy, takty procesora)
+- User interface based in C# allowing the selection of a library to execute the program  
+- Two libraries: C# and assembly  
+- Information windows about time (counting time, system time, processor clock cycles, average result from last 5 conversions).  
+- Set of controls (sliders, buttons)  
+- Assembly with vector instructions  
+- 3 sets of test data  
+- Multi-threading support for C# (1, 2, 4, 8, 16, 32, 64 Threads available)  
+- Convertion on a scale of 0 to 100
 
-✅ Zestawu kontrolek (suwaki, przyciski, itp..., w tym do obsługi wielowątkowości)
+### GUI
 
-### Wymagania: 
-
-✅ Brak dla C# -> 2 tożsame biblioteki
-
-✅ ASM z instrukcjami wektorowymi
-
-✅ Przygotowanie interfejsu użytkownika
-
-✅ Działająca aplikacja
-
-✅ Użycie dowolnej technologii GUI
-
-✅ Pomiar czasu (z uwzględnieniem jednostek):
-
-✅ 3 zestawy danych
-
-✅ Uśredniony wynik z 5 wywołań
-
-✅ Projekt realizowany w systemie kontroli wersji (np. GitHub!)
-
-✅ Regularność pracy (1 wersja na maks. 2 tygodnie)
-
-✅ Porównywalny udział osób w projekcie
-
-❌ Brak dla ASM -> Poprawna obsługa wielowątkowości (liczba wątków zgodna z liczbą procesorów logicznych)
-
-❌ Brak dla ASM -> Wątki 1, 2, 4, 8, 16, 32, 64 (dla grup 2 osobowych)
+![image](https://github.com/AdamKuraczynski/ConverterToNegative/assets/145380612/0e30c10b-9d26-43b5-9083-5a1084214daa)
